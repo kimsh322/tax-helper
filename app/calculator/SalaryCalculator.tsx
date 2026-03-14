@@ -37,7 +37,7 @@ export default function SalaryCalculator() {
       <div className="rounded-lg border border-ink/10 bg-surface/40 p-6">
         <div className="grid gap-5 sm:grid-cols-2">
           {/* 연봉 */}
-          <div className="sm:col-span-2">
+          <div>
             <label className="block text-sm font-bold text-ink mb-1.5">
               연봉 (원)
             </label>
@@ -65,48 +65,54 @@ export default function SalaryCalculator() {
               value={nonTaxable}
               onChange={(e) => {
                 const raw = parseInputNumber(e.target.value);
-                setNonTaxable(raw > 0 ? formatNumber(raw) : "");
+                setNonTaxable(raw > 0 ? formatNumber(raw) : e.target.value === "" ? "" : "0");
               }}
               placeholder="식대 등 (기본 200,000)"
               className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
             />
             <p className="mt-1 text-xs text-muted">식대 월 20만원 비과세 등</p>
           </div>
+        </div>
 
-          {/* 부양가족 수 */}
-          <div>
-            <label className="block text-sm font-bold text-ink mb-1.5">
-              부양가족 수 (본인 포함)
-            </label>
-            <select
-              value={dependents}
-              onChange={(e) => setDependents(Number(e.target.value))}
-              className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
-            >
-              {Array.from({ length: 11 }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>
-                  {n}명
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* 소득세 관련 */}
+        <div className="mt-5 border-t border-ink/10 pt-5">
+          <p className="text-xs text-muted mb-4">소득세 계산용</p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {/* 부양가족 수 */}
+            <div>
+              <label className="block text-sm font-bold text-ink mb-1.5">
+                부양가족 수 (본인 포함)
+              </label>
+              <select
+                value={dependents}
+                onChange={(e) => setDependents(Number(e.target.value))}
+                className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
+              >
+                {Array.from({ length: 11 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n}명
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* 20세 이하 자녀 수 */}
-          <div>
-            <label className="block text-sm font-bold text-ink mb-1.5">
-              20세 이하 자녀 수
-            </label>
-            <select
-              value={childrenUnder20}
-              onChange={(e) => setChildrenUnder20(Number(e.target.value))}
-              className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
-            >
-              {Array.from({ length: 8 }, (_, i) => i).map((n) => (
-                <option key={n} value={n}>
-                  {n}명
-                </option>
-              ))}
-            </select>
+            {/* 20세 이하 자녀 수 */}
+            <div>
+              <label className="block text-sm font-bold text-ink mb-1.5">
+                8세 이상 20세 이하 자녀 수
+              </label>
+              <select
+                value={childrenUnder20}
+                onChange={(e) => setChildrenUnder20(Number(e.target.value))}
+                className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
+              >
+                {Array.from({ length: 8 }, (_, i) => i).map((n) => (
+                  <option key={n} value={n}>
+                    {n}명
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
