@@ -84,10 +84,10 @@ export default function SalaryTable() {
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsStuck(!entry.isIntersecting),
-      { threshold: 0, rootMargin: "-57px 0px 0px 0px" },
-    );
+    const observer = new IntersectionObserver(([entry]) => setIsStuck(!entry.isIntersecting), {
+      threshold: 0,
+      rootMargin: "-57px 0px 0px 0px",
+    });
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, []);
@@ -110,11 +110,11 @@ export default function SalaryTable() {
         {/* 고정 헤더 */}
         <div
           ref={headerRef}
-          className={`sticky top-[56px] z-10 bg-paper border-t border-x border-b-2 border-b-ink/10 overflow-hidden ${
+          className={`sticky top-14 z-10 bg-paper border-t border-x border-b-2 border-b-ink/10 overflow-hidden ${
             isStuck ? "border-t-ink/10 border-x-ink/10" : "border-t-transparent border-x-transparent rounded-t-lg"
           }`}
         >
-          <table className="w-full text-sm whitespace-nowrap min-w-[800px] table-fixed">
+          <table className="w-full text-sm whitespace-nowrap min-w-200 table-fixed">
             <Colgroup />
             <thead>
               <tr>
@@ -134,7 +134,7 @@ export default function SalaryTable() {
         </div>
         {/* 테이블 본문 */}
         <div ref={bodyRef} onScroll={handleBodyScroll} className="overflow-x-auto">
-          <table className="w-full text-sm whitespace-nowrap min-w-[800px] table-fixed">
+          <table className="w-full text-sm whitespace-nowrap min-w-200 table-fixed">
             <Colgroup />
             <tbody>
               {groups.map((group, i) => {
@@ -157,7 +157,17 @@ export default function SalaryTable() {
   );
 }
 
-function Group({ group, isFirst, isCollapsed, onToggle }: { group: SalaryGroup; isFirst: boolean; isCollapsed: boolean; onToggle: () => void }) {
+function Group({
+  group,
+  isFirst,
+  isCollapsed,
+  onToggle,
+}: {
+  group: SalaryGroup;
+  isFirst: boolean;
+  isCollapsed: boolean;
+  onToggle: () => void;
+}) {
   return (
     <>
       <tr
