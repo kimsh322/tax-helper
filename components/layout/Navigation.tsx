@@ -64,7 +64,7 @@ export default function Navigation() {
   return (
     <>
       {/* 데스크톱 사이드바 */}
-      <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:w-[240px] border-r border-ink/10 bg-surface/50">
+      <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:w-60 border-r border-ink/10 bg-surface/50">
         <div className="px-6 py-8">
           <Link href="/" className="block">
             <h1 className="font-serif text-lg font-bold text-ink leading-tight">
@@ -78,29 +78,20 @@ export default function Navigation() {
         <nav className="flex-1 px-3">
           <ul className="space-y-1">
             {navItems.map((item) => {
-              const isActive =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href);
+              const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                      isActive
-                        ? "bg-ink text-paper font-bold"
-                        : "text-ink/70 hover:bg-ink/5 hover:text-ink"
+                      isActive ? "bg-ink text-paper font-bold" : "text-ink/70 hover:bg-ink/5 hover:text-ink"
                     }`}
                   >
                     <span className="shrink-0">{item.icon}</span>
                     <span className="flex-1">{item.label}</span>
                     {item.number && (
-                      <span
-                        className={`font-mono text-xs ${
-                          isActive ? "text-paper/50" : "text-muted"
-                        }`}
-                      >
+                      <span className={`font-mono text-xs ${isActive ? "text-paper/50" : "text-muted"}`}>
                         {item.number}
                       </span>
                     )}
@@ -112,7 +103,7 @@ export default function Navigation() {
         </nav>
 
         <div className="px-6 py-4 border-t border-ink/10">
-          <p className="text-xs text-muted">2025년 귀속 연말정산</p>
+          <p className="text-xs text-muted">2026년 귀속 연말정산</p>
         </div>
       </aside>
 
@@ -120,25 +111,18 @@ export default function Navigation() {
       <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-ink/10 bg-paper/95 backdrop-blur-sm safe-bottom md:hidden">
         <ul className="flex items-center justify-around px-2 py-1">
           {navItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   className={`flex flex-col items-center gap-0.5 px-3 py-2 text-[10px] transition-colors ${
-                    isActive
-                      ? "text-seal font-bold"
-                      : "text-muted hover:text-ink"
+                    isActive ? "text-seal font-bold" : "text-muted hover:text-ink"
                   }`}
                 >
                   <span>{item.icon}</span>
-                  <span className="truncate max-w-[56px]">
-                    {item.href === "/" ? "홈" : item.label.split(" ")[0]}
-                  </span>
+                  <span className="truncate max-w-14">{item.href === "/" ? "홈" : item.label.split(" ")[0]}</span>
                 </Link>
               </li>
             );

@@ -29,11 +29,11 @@ const sections = [
 
 export default function Home() {
   return (
-    <div className="stamp-watermark min-h-full px-6 py-8 md:px-10 md:py-16">
+    <div className="min-h-full px-6 py-8 md:px-10 md:py-16">
       <div className="mx-auto max-w-5xl">
         {/* 히어로 */}
         <div className="mb-12 md:mb-16">
-          <p className="font-mono text-xs text-muted mb-3">2025년 귀속</p>
+          <p className="font-mono text-xs text-muted mb-3">2026년 귀속</p>
           <h1 className="font-serif text-4xl font-bold text-ink leading-tight md:text-5xl">
             연말정산
             <br />
@@ -53,9 +53,7 @@ export default function Home() {
               className="group block rounded-lg border border-ink/10 bg-surface/50 p-6 transition-all hover:border-ink/20 hover:bg-surface hover:shadow-sm"
             >
               <div className="flex items-baseline justify-between mb-3">
-                <span className="font-mono text-xs text-muted">
-                  {section.number}
-                </span>
+                <span className="font-mono text-xs text-muted">{section.number}</span>
                 <svg
                   width="16"
                   height="16"
@@ -68,12 +66,8 @@ export default function Home() {
                   <path d="M6 3l5 5-5 5" />
                 </svg>
               </div>
-              <h2 className="font-serif text-lg font-bold text-ink mb-1">
-                {section.title}
-              </h2>
-              <p className="text-sm text-muted leading-relaxed">
-                {section.description}
-              </p>
+              <h2 className="font-serif text-lg font-bold text-ink mb-1">{section.title}</h2>
+              <p className="text-sm text-muted leading-relaxed">{section.description}</p>
             </Link>
           ))}
         </div>

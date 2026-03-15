@@ -27,25 +27,6 @@ body {
   font-family: var(--font-sans), sans-serif;
 }
 
-/* 도장 워터마크 배경 */
-.stamp-watermark {
-  position: relative;
-}
-
-.stamp-watermark::before {
-  content: "確";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-15deg);
-  font-size: 20rem;
-  font-family: var(--font-serif), serif;
-  color: var(--seal);
-  opacity: 0.03;
-  pointer-events: none;
-  user-select: none;
-  line-height: 1;
-}
 
 /* 스크롤바 스타일 */
 ::-webkit-scrollbar {

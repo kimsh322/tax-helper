@@ -7,9 +7,7 @@ export default function Footer() {
           <br />
           정확한 세액은 국세청 홈택스를 통해 확인하시기 바랍니다.
         </p>
-        <p className="mt-2 text-xs text-muted/60">
-          &copy; 2025 연말정산 미리계산
-        </p>
+        <p className="mt-2 text-xs text-muted/60">&copy; 2026 연말정산 미리계산</p>
       </div>
     </footer>
   );
