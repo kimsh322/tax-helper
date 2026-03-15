@@ -17,15 +17,15 @@ export default function CalculatorTabs() {
   return (
     <div className="space-y-8">
       {/* 탭 버튼 */}
-      <div className="flex border-b-2 border-ink/10 sticky top-0 z-10 bg-paper">
+      <div className="flex gap-2 sticky top-0 z-10 bg-paper py-2">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-3 text-sm font-bold transition-colors cursor-pointer -mb-[2px] ${
+            className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-colors cursor-pointer ${
               activeTab === tab.id
-                ? "border-b-2 border-ink text-ink"
-                : "border-b-2 border-transparent text-muted hover:text-ink/70"
+                ? "bg-ink text-paper"
+                : "bg-ink/5 text-muted hover:bg-ink/10 hover:text-ink/70"
             }`}
           >
             {tab.label}

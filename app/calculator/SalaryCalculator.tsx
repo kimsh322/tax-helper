@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { calculateSalary, type SalaryResult } from "@/lib/salary";
 
 function formatNumber(n: number): string {
@@ -9,6 +9,68 @@ function formatNumber(n: number): string {
 
 function parseInputNumber(value: string): number {
   return Number(value.replace(/[^0-9]/g, "")) || 0;
+}
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  options: { value: number; label: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink cursor-pointer hover:border-ink/30 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
+      >
+        <span>{selected?.label}</span>
+        <span className={`text-muted transition-transform ${open ? "rotate-180" : ""}`}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+      {open && (
+        <ul className="absolute z-20 mt-1 w-full max-h-48 overflow-y-auto rounded-md border border-ink/10 bg-paper shadow-lg">
+          {options.map((o) => (
+            <li key={o.value}>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(o.value);
+                  setOpen(false);
+                }}
+                className={`w-full px-4 py-2.5 text-left text-sm cursor-pointer transition-colors ${
+                  o.value === value
+                    ? "bg-ink/5 font-bold text-ink"
+                    : "text-ink/70 hover:bg-ink/5"
+                }`}
+              >
+                {o.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 export default function SalaryCalculator() {
@@ -83,17 +145,14 @@ export default function SalaryCalculator() {
               <label className="block text-sm font-bold text-ink mb-1.5">
                 부양가족 수 (본인 포함)
               </label>
-              <select
+              <CustomSelect
                 value={dependents}
-                onChange={(e) => setDependents(Number(e.target.value))}
-                className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
-              >
-                {Array.from({ length: 11 }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>
-                    {n}명
-                  </option>
-                ))}
-              </select>
+                onChange={setDependents}
+                options={Array.from({ length: 11 }, (_, i) => ({
+                  value: i + 1,
+                  label: `${i + 1}명`,
+                }))}
+              />
             </div>
 
             {/* 20세 이하 자녀 수 */}
@@ -101,17 +160,14 @@ export default function SalaryCalculator() {
               <label className="block text-sm font-bold text-ink mb-1.5">
                 8세 이상 20세 이하 자녀 수
               </label>
-              <select
+              <CustomSelect
                 value={childrenUnder20}
-                onChange={(e) => setChildrenUnder20(Number(e.target.value))}
-                className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 text-sm text-ink focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
-              >
-                {Array.from({ length: 8 }, (_, i) => i).map((n) => (
-                  <option key={n} value={n}>
-                    {n}명
-                  </option>
-                ))}
-              </select>
+                onChange={setChildrenUnder20}
+                options={Array.from({ length: 8 }, (_, i) => ({
+                  value: i,
+                  label: `${i}명`,
+                }))}
+              />
             </div>
           </div>
         </div>
