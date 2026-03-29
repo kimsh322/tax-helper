@@ -106,7 +106,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-ink/10 bg-surface/40 overflow-hidden">
+    <div className="rounded-lg border border-ink/10 bg-surface/40">
       <button
         type="button"
         onClick={onToggle}

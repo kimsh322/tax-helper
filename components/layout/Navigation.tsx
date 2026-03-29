@@ -36,19 +36,9 @@ const navItems = [
     ),
   },
   {
-    href: "/tips",
-    label: "절세 팁",
-    number: "03",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M10 3a5 5 0 013 9v2a1 1 0 01-1 1H8a1 1 0 01-1-1v-2a5 5 0 013-9zM8 17h4" />
-      </svg>
-    ),
-  },
-  {
     href: "/deductions",
     label: "공제 항목",
-    number: "04",
+    number: "03",
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M4 4h12M4 8h12M4 12h8M4 16h6" />
@@ -56,6 +46,16 @@ const navItems = [
       </svg>
     ),
   },
+  // {
+  //   href: "/tips",
+  //   label: "절세 팁",
+  //   number: "04",
+  //   icon: (
+  //     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //       <path d="M10 3a5 5 0 013 9v2a1 1 0 01-1 1H8a1 1 0 01-1-1v-2a5 5 0 013-9zM8 17h4" />
+  //     </svg>
+  //   ),
+  // },
 ];
 
 export default function Navigation() {

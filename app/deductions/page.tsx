@@ -104,7 +104,7 @@ export default function DeductionsPage() {
   return (
     <PageShell>
       <Header
-        number="04"
+        number="03"
         title="공제 항목 설명"
         description="연말정산의 계산 흐름과 소득공제/세액공제 항목을 한눈에 정리했습니다."
       />
