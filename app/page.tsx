@@ -1,4 +1,5 @@
 import Link from "next/link";
+import QuickSimulation from "./QuickSimulation";
 
 const sections = [
   {
@@ -14,14 +15,8 @@ const sections = [
     description: "올해 연말정산에서 돌려받을 수 있는 예상 환급액을 계산합니다.",
   },
   {
-    href: "/tips",
-    number: "03",
-    title: "절세 팁",
-    description: "연말정산 환급액을 늘리기 위한 실전 절세 전략을 안내합니다.",
-  },
-  {
     href: "/deductions",
-    number: "04",
+    number: "03",
     title: "공제 항목 설명",
     description: "소득공제와 세액공제 항목을 쉽게 이해할 수 있도록 정리했습니다.",
   },
@@ -44,8 +39,13 @@ export default function Home() {
           </p>
         </div>
 
+        {/* 퀵 시뮬레이션 */}
+        <div className="mb-8">
+          <QuickSimulation />
+        </div>
+
         {/* 섹션 카드 그리드 */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((section) => (
             <Link
               key={section.href}

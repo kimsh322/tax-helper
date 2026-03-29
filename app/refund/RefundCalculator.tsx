@@ -1,6 +1,7 @@
 "use client";
 
-import { useReducer, useState, type ReactNode } from "react";
+import { useEffect, useReducer, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { calculateRefund, type RefundInput, type RefundResult } from "@/lib/refund";
 import CustomSelect from "@/components/ui/CustomSelect";
 
@@ -175,6 +176,7 @@ function MoneyInput({
 // ─── Component ───────────────────────────────────────────
 
 export default function RefundCalculator() {
+  const searchParams = useSearchParams();
   const [state, dispatch] = useReducer(reducer, initialState);
   const [openSections, setOpenSections] = useState<Set<number>>(
     () => new Set([1, 2, 3]),
@@ -184,6 +186,24 @@ export default function RefundCalculator() {
   function update(payload: Partial<FormState>) {
     dispatch({ type: "update", payload });
   }
+
+  // URL params로 전달된 데이터 초기화 (실수령액 계산기에서 연동)
+  useEffect(() => {
+    const salary = searchParams.get("salary");
+    if (!salary) return;
+
+    const fmt = (v: string | null) =>
+      v && Number(v) > 0 ? formatNumber(Number(v)) : "";
+
+    update({
+      totalSalary: fmt(salary),
+      nationalPension: fmt(searchParams.get("pension")),
+      healthInsurance: fmt(searchParams.get("health")),
+      employmentInsurance: fmt(searchParams.get("employment")),
+      prepaidTax: fmt(searchParams.get("prepaid")),
+      dependents: Number(searchParams.get("dependents")) || 1,
+    });
+  }, [searchParams]);
 
   function toggleSection(n: number) {
     setOpenSections((prev) => {

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { calculateSalary, type SalaryResult } from "@/lib/salary";
 import CustomSelect from "@/components/ui/CustomSelect";
 
@@ -13,11 +15,43 @@ function parseInputNumber(value: string): number {
 }
 
 export default function SalaryCalculator() {
+  const searchParams = useSearchParams();
   const [annualSalary, setAnnualSalary] = useState("");
   const [nonTaxable, setNonTaxable] = useState("200000");
   const [dependents, setDependents] = useState(1);
   const [childrenUnder20, setChildrenUnder20] = useState(0);
   const [result, setResult] = useState<SalaryResult | null>(null);
+
+  // URL params로 전달된 데이터로 자동 계산
+  useEffect(() => {
+    const salaryParam = searchParams.get("salary");
+    if (!salaryParam) return;
+    const salary = Number(salaryParam);
+    if (salary <= 0) return;
+
+    setAnnualSalary(formatNumber(salary));
+    const res = calculateSalary({
+      annualSalary: salary,
+      monthlyNonTaxable: 200_000,
+      dependents: 1,
+      childrenUnder20: 0,
+    });
+    setResult(res);
+  }, [searchParams]);
+
+  function buildRefundLink(): string {
+    if (!result) return "/refund";
+    const salary = parseInputNumber(annualSalary);
+    const params = new URLSearchParams({
+      salary: String(salary),
+      pension: String(result.deductions.nationalPension * 12),
+      health: String((result.deductions.healthInsurance + result.deductions.longTermCare) * 12),
+      employment: String(result.deductions.employmentInsurance * 12),
+      prepaid: String(result.deductions.incomeTax * 12),
+      dependents: String(dependents),
+    });
+    return `/refund?${params.toString()}`;
+  }
 
   function handleCalculate() {
     const salary = parseInputNumber(annualSalary);
@@ -196,6 +230,14 @@ export default function SalaryCalculator() {
               </tfoot>
             </table>
           </div>
+
+          {/* 환급액 계산 연동 */}
+          <Link
+            href={buildRefundLink()}
+            className="block w-full rounded-md border-2 border-seal/20 bg-seal/5 py-3.5 text-center text-sm font-bold text-seal transition-colors hover:bg-seal/10"
+          >
+            이 정보로 환급액 계산하기 →
+          </Link>
 
           {/* 요율 안내 */}
           <p className="text-xs text-muted leading-relaxed">
