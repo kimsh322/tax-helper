@@ -2,7 +2,7 @@
 
 2026년 귀속 연말정산 모의계산기입니다. 연봉을 입력하면 실수령액과 예상 환급액을 미리 계산해볼 수 있습니다.
 
-**https://kimsh322.github.io/tax-helper/**
+**<a href="https://kimsh322.github.io/tax-helper/" target="_blank">https://kimsh322.github.io/tax-helper/</a>**
 
 ## 주요 기능
 
