@@ -1,103 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { calculateSalary } from "@/lib/salary";
-import { calculateRefund } from "@/lib/refund";
-
-function formatNumber(n: number): string {
-  return n.toLocaleString("ko-KR");
-}
-
-function parseInputNumber(value: string): number {
-  return Number(value.replace(/[^0-9]/g, "")) || 0;
-}
-
-interface QuickResult {
-  monthlySalary: number;
-  netSalary: number;
-  totalDeduction: number;
-  refundAmount: number;
-  isRefund: boolean;
-  refundLink: string;
-  salaryLink: string;
-}
+import { formatNumber } from "@/lib/format";
+import { useQuickSimulation } from "./useQuickSimulation";
 
 export default function QuickSimulation() {
-  const [salary, setSalary] = useState("");
-  const [result, setResult] = useState<QuickResult | null>(null);
-
-  function handleCalculate() {
-    const annual = parseInputNumber(salary);
-    if (annual <= 0) return;
-
-    // 실수령액 계산 (부양가족 1명, 비과세 20만)
-    const salaryResult = calculateSalary({
-      annualSalary: annual,
-      monthlyNonTaxable: 200_000,
-      dependents: 1,
-      childrenUnder20: 0,
-    });
-
-    // 환급액 계산 (기본공제만, 기납부세액 = 소득세×12)
-    const d = salaryResult.deductions;
-    const annualPension = d.nationalPension * 12;
-    const annualHealth = (d.healthInsurance + d.longTermCare) * 12;
-    const annualEmployment = d.employmentInsurance * 12;
-    const annualPrepaid = d.incomeTax * 12;
-
-    const refundResult = calculateRefund({
-      totalSalary: annual,
-      dependents: 1,
-      disabled: 0,
-      singleParent: 0,
-      womanDeduction: 0,
-      seniorCount: 0,
-      prepaidTax: annualPrepaid,
-      nationalPension: annualPension,
-      healthInsurance: annualHealth,
-      employmentInsurance: annualEmployment,
-      housingRentLoan: 0,
-      housingMortgage: 0,
-      creditCardDeduction: 0,
-      otherIncomeDeduction: 0,
-      medicalSelf: 0,
-      medicalOther: 0,
-      educationSelf: 0,
-      educationChild: 0,
-      educationUniv: 0,
-      insurancePremium: 0,
-      disabledInsurance: 0,
-      donationCredit: 0,
-      smeReduction: false,
-      smeReductionRate: 0,
-      monthlyRent: 0,
-      pensionAccount: 0,
-      irpSavings: 0,
-      childCount: 0,
-      marriageCredit: 0,
-      otherTaxCredit: 0,
-    });
-
-    const params = new URLSearchParams({
-      salary: String(annual),
-      pension: String(annualPension),
-      health: String(annualHealth),
-      employment: String(annualEmployment),
-      prepaid: String(annualPrepaid),
-      dependents: "1",
-    });
-
-    setResult({
-      monthlySalary: salaryResult.monthlySalary,
-      netSalary: salaryResult.netSalary,
-      totalDeduction: salaryResult.totalDeduction,
-      refundAmount: refundResult.totalDiff,
-      isRefund: refundResult.isRefund,
-      refundLink: `/refund?${params.toString()}`,
-      salaryLink: `/calculator?salary=${annual}`,
-    });
-  }
+  const { salary, result, handleSalaryChange, handleCalculate } =
+    useQuickSimulation();
 
   return (
     <div className="rounded-lg border border-ink/10 bg-surface/40 p-6">
@@ -113,10 +22,7 @@ export default function QuickSimulation() {
           type="text"
           inputMode="numeric"
           value={salary}
-          onChange={(e) => {
-            const raw = parseInputNumber(e.target.value);
-            setSalary(raw > 0 ? formatNumber(raw) : "");
-          }}
+          onChange={(e) => handleSalaryChange(e.target.value)}
           placeholder="연봉 입력 (예: 50,000,000)"
           className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10 sm:flex-1"
         />

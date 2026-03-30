@@ -1,70 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { calculateSalary, type SalaryResult } from "@/lib/salary";
+import { formatNumber } from "@/lib/format";
 import CustomSelect from "@/components/ui/CustomSelect";
-
-function formatNumber(n: number): string {
-  return n.toLocaleString("ko-KR");
-}
-
-function parseInputNumber(value: string): number {
-  return Number(value.replace(/[^0-9]/g, "")) || 0;
-}
+import { useSalaryCalculator } from "./useSalaryCalculator";
 
 export default function SalaryCalculator() {
   const searchParams = useSearchParams();
-  const [annualSalary, setAnnualSalary] = useState("");
-  const [nonTaxable, setNonTaxable] = useState("200000");
-  const [dependents, setDependents] = useState(1);
-  const [childrenUnder20, setChildrenUnder20] = useState(0);
-  const [result, setResult] = useState<SalaryResult | null>(null);
-
-  // URL params로 전달된 데이터로 자동 계산
-  useEffect(() => {
-    const salaryParam = searchParams.get("salary");
-    if (!salaryParam) return;
-    const salary = Number(salaryParam);
-    if (salary <= 0) return;
-
-    setAnnualSalary(formatNumber(salary));
-    const res = calculateSalary({
-      annualSalary: salary,
-      monthlyNonTaxable: 200_000,
-      dependents: 1,
-      childrenUnder20: 0,
-    });
-    setResult(res);
-  }, [searchParams]);
-
-  function buildRefundLink(): string {
-    if (!result) return "/refund";
-    const salary = parseInputNumber(annualSalary);
-    const params = new URLSearchParams({
-      salary: String(salary),
-      pension: String(result.deductions.nationalPension * 12),
-      health: String((result.deductions.healthInsurance + result.deductions.longTermCare) * 12),
-      employment: String(result.deductions.employmentInsurance * 12),
-      prepaid: String(result.deductions.incomeTax * 12),
-      dependents: String(dependents),
-    });
-    return `/refund?${params.toString()}`;
-  }
-
-  function handleCalculate() {
-    const salary = parseInputNumber(annualSalary);
-    if (salary <= 0) return;
-
-    const res = calculateSalary({
-      annualSalary: salary,
-      monthlyNonTaxable: parseInputNumber(nonTaxable),
-      dependents,
-      childrenUnder20,
-    });
-    setResult(res);
-  }
+  const {
+    annualSalary,
+    nonTaxable,
+    dependents,
+    childrenUnder20,
+    result,
+    setDependents,
+    setChildrenUnder20,
+    handleAnnualSalaryChange,
+    handleNonTaxableChange,
+    handleCalculate,
+    buildRefundLink,
+  } = useSalaryCalculator(searchParams);
 
   return (
     <div className="space-y-8">
@@ -80,10 +36,7 @@ export default function SalaryCalculator() {
               type="text"
               inputMode="numeric"
               value={annualSalary}
-              onChange={(e) => {
-                const raw = parseInputNumber(e.target.value);
-                setAnnualSalary(raw > 0 ? formatNumber(raw) : "");
-              }}
+              onChange={(e) => handleAnnualSalaryChange(e.target.value)}
               placeholder="예: 50,000,000"
               className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-lg text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
             />
@@ -98,10 +51,7 @@ export default function SalaryCalculator() {
               type="text"
               inputMode="numeric"
               value={nonTaxable}
-              onChange={(e) => {
-                const raw = parseInputNumber(e.target.value);
-                setNonTaxable(raw > 0 ? formatNumber(raw) : e.target.value === "" ? "" : "0");
-              }}
+              onChange={(e) => handleNonTaxableChange(e.target.value)}
               placeholder="식대 등 (기본 200,000)"
               className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
             />

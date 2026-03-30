@@ -1,260 +1,23 @@
 "use client";
 
-import { useEffect, useReducer, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { calculateRefund, type RefundInput, type RefundResult } from "@/lib/refund";
+import { formatNumber, parseInputNumber } from "@/lib/format";
 import CustomSelect from "@/components/ui/CustomSelect";
-
-function formatNumber(n: number): string {
-  return n.toLocaleString("ko-KR");
-}
-
-function parseInputNumber(value: string): number {
-  return Number(value.replace(/[^0-9]/g, "")) || 0;
-}
-
-// ─── State ───────────────────────────────────────────────
-
-interface FormState {
-  totalSalary: string;
-  dependents: number;
-  disabled: number;
-  singleParent: number;
-  womanDeduction: number;
-  seniorCount: number;
-  prepaidTax: string;
-
-  nationalPension: string;
-  healthInsurance: string;
-  employmentInsurance: string;
-  housingRentLoan: string;
-  housingMortgage: string;
-  creditCardDeduction: string;
-  otherIncomeDeduction: string;
-
-  medicalSelf: string;
-  medicalOther: string;
-  educationSelf: string;
-  educationChild: string;
-  educationUniv: string;
-  insurancePremium: string;
-  disabledInsurance: string;
-  donationCredit: string;
-  smeReduction: boolean;
-  smeReductionRate: number;
-  monthlyRent: string;
-  pensionAccount: string;
-  irpSavings: string;
-  childCount: number;
-  marriageCredit: number;
-  otherTaxCredit: string;
-}
-
-const initialState: FormState = {
-  totalSalary: "",
-  dependents: 1,
-  disabled: 0,
-  singleParent: 0,
-  womanDeduction: 0,
-  seniorCount: 0,
-  prepaidTax: "",
-  nationalPension: "",
-  healthInsurance: "",
-  employmentInsurance: "",
-  housingRentLoan: "",
-  housingMortgage: "",
-  creditCardDeduction: "",
-  otherIncomeDeduction: "",
-  medicalSelf: "",
-  medicalOther: "",
-  educationSelf: "",
-  educationChild: "",
-  educationUniv: "",
-  insurancePremium: "",
-  disabledInsurance: "",
-  donationCredit: "",
-  smeReduction: false,
-  smeReductionRate: 0.7,
-  monthlyRent: "",
-  pensionAccount: "",
-  irpSavings: "",
-  childCount: 0,
-  marriageCredit: 0,
-  otherTaxCredit: "",
-};
-
-type Action = { type: "update"; payload: Partial<FormState> };
-
-function reducer(state: FormState, action: Action): FormState {
-  return { ...state, ...action.payload };
-}
-
-// ─── Accordion Section ───────────────────────────────────
-
-function Section({
-  number,
-  title,
-  summary,
-  open,
-  onToggle,
-  children,
-}: {
-  number: string;
-  title: string;
-  summary?: string;
-  open: boolean;
-  onToggle: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-lg border border-ink/10 bg-surface/40">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-surface/60 transition-colors"
-      >
-        <div className="flex items-baseline gap-2">
-          <span className="font-mono text-xs text-muted">{number}</span>
-          <span className="text-sm font-bold text-ink">{title}</span>
-          {!open && summary && (
-            <span className="text-xs text-muted ml-2">{summary}</span>
-          )}
-        </div>
-        <span
-          className={`text-muted transition-transform ${open ? "rotate-180" : ""}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M4 6l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </button>
-      {open && <div className="px-6 pb-6 pt-2">{children}</div>}
-    </div>
-  );
-}
-
-// ─── Input helpers ───────────────────────────────────────
-
-function MoneyInput({
-  label,
-  value,
-  onChange,
-  hint,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  hint?: string;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-bold text-ink mb-1.5">{label}</label>
-      <input
-        type="text"
-        inputMode="numeric"
-        value={value}
-        onChange={(e) => {
-          const raw = parseInputNumber(e.target.value);
-          onChange(raw > 0 ? formatNumber(raw) : "");
-        }}
-        placeholder={placeholder ?? "0"}
-        className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
-      />
-      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
-    </div>
-  );
-}
-
-// ─── Component ───────────────────────────────────────────
+import Section from "@/components/ui/Section";
+import MoneyInput from "@/components/ui/MoneyInput";
+import { useRefundCalculator } from "./useRefundCalculator";
 
 export default function RefundCalculator() {
   const searchParams = useSearchParams();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const [openSections, setOpenSections] = useState<Set<number>>(
-    () => new Set([1, 2, 3]),
-  );
-  const [result, setResult] = useState<RefundResult | null>(null);
-
-  function update(payload: Partial<FormState>) {
-    dispatch({ type: "update", payload });
-  }
-
-  // URL params로 전달된 데이터 초기화 (실수령액 계산기에서 연동)
-  useEffect(() => {
-    const salary = searchParams.get("salary");
-    if (!salary) return;
-
-    const fmt = (v: string | null) =>
-      v && Number(v) > 0 ? formatNumber(Number(v)) : "";
-
-    update({
-      totalSalary: fmt(salary),
-      nationalPension: fmt(searchParams.get("pension")),
-      healthInsurance: fmt(searchParams.get("health")),
-      employmentInsurance: fmt(searchParams.get("employment")),
-      prepaidTax: fmt(searchParams.get("prepaid")),
-      dependents: Number(searchParams.get("dependents")) || 1,
-    });
-  }, [searchParams]);
-
-  function toggleSection(n: number) {
-    setOpenSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(n)) next.delete(n);
-      else next.add(n);
-      return next;
-    });
-  }
-
-  function handleCalculate() {
-    const salary = parseInputNumber(state.totalSalary);
-    if (salary <= 0) return;
-
-    const input: RefundInput = {
-      totalSalary: salary,
-      dependents: state.dependents,
-      disabled: state.disabled,
-      singleParent: state.singleParent,
-      womanDeduction: state.womanDeduction,
-      seniorCount: state.seniorCount,
-      prepaidTax: parseInputNumber(state.prepaidTax),
-      nationalPension: parseInputNumber(state.nationalPension),
-      healthInsurance: parseInputNumber(state.healthInsurance),
-      employmentInsurance: parseInputNumber(state.employmentInsurance),
-      housingRentLoan: parseInputNumber(state.housingRentLoan),
-      housingMortgage: parseInputNumber(state.housingMortgage),
-      creditCardDeduction: parseInputNumber(state.creditCardDeduction),
-      otherIncomeDeduction: parseInputNumber(state.otherIncomeDeduction),
-      medicalSelf: parseInputNumber(state.medicalSelf),
-      medicalOther: parseInputNumber(state.medicalOther),
-      educationSelf: parseInputNumber(state.educationSelf),
-      educationChild: parseInputNumber(state.educationChild),
-      educationUniv: parseInputNumber(state.educationUniv),
-      insurancePremium: parseInputNumber(state.insurancePremium),
-      disabledInsurance: parseInputNumber(state.disabledInsurance),
-      donationCredit: parseInputNumber(state.donationCredit),
-      smeReduction: state.smeReduction,
-      smeReductionRate: state.smeReductionRate,
-      monthlyRent: parseInputNumber(state.monthlyRent),
-      pensionAccount: parseInputNumber(state.pensionAccount),
-      irpSavings: parseInputNumber(state.irpSavings),
-      childCount: state.childCount,
-      marriageCredit: state.marriageCredit,
-      otherTaxCredit: parseInputNumber(state.otherTaxCredit),
-    };
-
-    setResult(calculateRefund(input));
-  }
-
-  const f = (v: string) => (parseInputNumber(v) > 0 ? `${formatNumber(parseInputNumber(v))}원` : "");
+  const {
+    state,
+    update,
+    openSections,
+    toggleSection,
+    result,
+    handleCalculate,
+    formatSummary,
+  } = useRefundCalculator(searchParams);
 
   return (
     <div className="space-y-4">
@@ -262,7 +25,7 @@ export default function RefundCalculator() {
       <Section
         number="01"
         title="기본 정보"
-        summary={f(state.totalSalary) ? `총급여 ${f(state.totalSalary)}` : undefined}
+        summary={formatSummary(state.totalSalary) ? `총급여 ${formatSummary(state.totalSalary)}` : undefined}
         open={openSections.has(1)}
         onToggle={() => toggleSection(1)}
       >

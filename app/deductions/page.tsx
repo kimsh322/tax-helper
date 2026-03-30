@@ -1,104 +1,10 @@
 import PageShell from "@/components/layout/PageShell";
 import Header from "@/components/layout/Header";
-
-function SectionTitle({
-  number,
-  title,
-  description,
-}: {
-  number: string;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="mb-4">
-      <div className="flex items-baseline gap-2">
-        <span className="font-mono text-xs text-muted">{number}</span>
-        <h2 className="font-serif text-lg font-bold text-ink">{title}</h2>
-      </div>
-      {description && (
-        <p className="mt-1 text-sm text-muted">{description}</p>
-      )}
-    </div>
-  );
-}
-
-function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-lg border border-ink/10 bg-surface/40 p-6">
-      {children}
-    </div>
-  );
-}
-
-function RateTable({
-  headers,
-  rows,
-  footnote,
-}: {
-  headers: string[];
-  rows: string[][];
-  footnote?: string;
-}) {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b-2 border-ink/10">
-            {headers.map((h, i) => (
-              <th
-                key={i}
-                className={`px-3 py-2.5 font-bold text-ink ${i === 0 ? "text-left" : "text-right"}`}
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-ink/5">
-          {rows.map((row, i) => (
-            <tr key={i}>
-              {row.map((cell, j) => (
-                <td
-                  key={j}
-                  className={`px-3 py-2 ${j === 0 ? "text-left text-ink/80" : "text-right font-mono text-ink"}`}
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {footnote && (
-        <p className="mt-2 text-xs text-muted">{footnote}</p>
-      )}
-    </div>
-  );
-}
-
-function Formula({
-  label,
-  formula,
-}: {
-  label: string;
-  formula: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1 rounded-md border border-ink/10 bg-paper px-4 py-3">
-      <span className="text-xs text-muted">{label}</span>
-      <span className="font-mono text-sm text-ink">{formula}</span>
-    </div>
-  );
-}
-
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-block rounded-full border border-seal/30 bg-seal/5 px-2.5 py-0.5 text-xs font-bold text-seal">
-      {children}
-    </span>
-  );
-}
+import SectionTitle from "@/components/ui/SectionTitle";
+import Card from "@/components/ui/Card";
+import RateTable from "@/components/ui/RateTable";
+import Formula from "@/components/ui/Formula";
+import Badge from "@/components/ui/Badge";
 
 export default function DeductionsPage() {
   return (
