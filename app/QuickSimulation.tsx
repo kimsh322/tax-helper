@@ -107,7 +107,7 @@ export default function QuickSimulation() {
           e.preventDefault();
           handleCalculate();
         }}
-        className="flex gap-3"
+        className="flex flex-col gap-3 sm:flex-row"
       >
         <input
           type="text"
@@ -118,11 +118,11 @@ export default function QuickSimulation() {
             setSalary(raw > 0 ? formatNumber(raw) : "");
           }}
           placeholder="연봉 입력 (예: 50,000,000)"
-          className="flex-1 rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10"
+          className="w-full rounded-md border border-ink/15 bg-paper px-4 py-3 font-mono text-sm text-ink placeholder:text-muted/50 focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/10 sm:flex-1"
         />
         <button
           type="submit"
-          className="shrink-0 rounded-md bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-ink/85 active:bg-ink/75 cursor-pointer"
+          className="w-full rounded-md bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-ink/85 active:bg-ink/75 cursor-pointer sm:w-auto"
         >
           계산
         </button>
